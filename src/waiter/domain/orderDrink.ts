@@ -1,6 +1,10 @@
 import { checkEnoughMoneyWasInserted } from "./checkEnoughMoneyWasInserted";
+import { checkDrinkShortage } from "./checkDrinkShortage";
+import { Drink } from "./type";
+import { beverageQuantityChecker } from "../dependencies/beverageQuantityChecker";
+import { emailNotifier } from "../dependencies/emailNotifier";
+import { buildDependencies } from "../dependencies/dependencies";
 
-export type Drink = "coffee" | "tea" | "chocolate" | "orange_juice"
 export type NumberOfSugars = 0 | 1 | 2
 export type StickNeed = "with_stick" | "without_stick";
 export type HotProperty = "cold" | "hot" | "extra_hot";
@@ -34,10 +38,21 @@ export type UserOrder<D extends Drink> = WithSugar<D, WithHeat<D, Order<D>>>;
 export type MachineOrder<D extends Drink> = WithSugarAndStick<D, WithHeat<D, Order<D>>>;
 
 
-export type ErrorMessage = {messageType: "not_enough_money", message: `Missing ${number}€ to complete order`}
+export type ErrorMessage =
+  {messageType: "not_enough_money", message: `Missing ${number}€ to complete order`} |
+  {messageType: "drink_shortage", message: `Too bad. Shortage of ${Drink}. The company has been notified.`};
+
+const dependencies = buildDependencies();
 
 
 export const orderDrink = (userOrder: UserOrder<Drink>, moneyInserted: MoneyInserted): MachineOrder<Drink> | ErrorMessage => {
+  const isDrinkEmpty = checkDrinkShortage(dependencies)(userOrder.drink);
+  if (isDrinkEmpty) {
+    return {
+      messageType: "drink_shortage",
+      message: `Too bad. Shortage of ${userOrder.drink}. The company has been notified.`
+    }
+  }
   const checkMoneyResult = checkEnoughMoneyWasInserted(userOrder.drink, moneyInserted)
   if (checkMoneyResult.checkMoneyResult === "not_enough") {
     return {

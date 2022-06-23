@@ -1,4 +1,5 @@
-import { Drink, ErrorMessage, MachineOrder, MoneyInserted, orderDrink, UserOrder } from "./orderDrink";
+import { ErrorMessage, MachineOrder, MoneyInserted, orderDrink, UserOrder } from "./orderDrink";
+import { Drink } from "./type";
 
 describe("orderDrink", () => {
   test("Should make a coffee without sugar nor stick when a coffee without sugar is ordered", () => {

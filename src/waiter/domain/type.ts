@@ -1,4 +1,4 @@
-type Drink = "coffee" | "tea" | "orange"
+export type Drink = "coffee" | "tea" | "orange" | "chocolate"
 export type Order<D extends Drink> = { drink: D };
 
 type WithSugar<D extends Drink, O extends Order<D>> =
@@ -26,3 +26,16 @@ export type InputOrder<D extends Drink> = { drink: D };
 
 type WithSugarAndStick<D extends Drink, O extends Order<D>> =
   O & { numberOfSugars: 0 | 1 | 2};
+
+export type EmailNotifier = {
+  notifyMissingDrink(drink: Drink): void;
+}
+
+export type BeverageQuantityChecker = {
+  drinkIsEmpty(drink: Drink): boolean;
+}
+
+export type Dependencies = {
+  emailNotifier: EmailNotifier;
+  beverageQuantityChecker: BeverageQuantityChecker;
+}
